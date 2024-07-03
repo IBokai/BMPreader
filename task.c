@@ -26,9 +26,9 @@ int checkformat(FILE *file)
 }
 int printBMP(const char *src)
 {
-    int bytes[14] = {4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4, 4, 4};
-    char *headers[14] = {"File size: ", "Reserved: ", "Data offset: ", "Size: ", "Width: ", "Height: ", "Planes: ", "Bits/pixel: ", "Compression: ", "Image size: ", "Pixels/meter (horizontal): ", "Pixels/meter (vertical): ", "Colors used: ", "Important colors: "};
-    char *compression[3] = {"none", "BI_RLE8", "BI_RLE4"};
+    int bytes[14] = {4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4, 4, 4}; // number of bytes to read each header
+    char *headernames[14] = {"File size: ", "Reserved: ", "Data offset: ", "Size: ", "Width: ", "Height: ", "Planes: ", "Bits/pixel: ", "Compression: ", "Image size: ", "Pixels/meter (horizontal): ", "Pixels/meter (vertical): ", "Colors used: ", "Important colors: "};
+    char *compression[3] = {"none", "BI_RLE8", "BI_RLE4"}; // compression types
     FILE *file = fopen(src, "rb");
     if (!file)
     {
@@ -45,12 +45,12 @@ int printBMP(const char *src)
     for (int i = 0; i < 14; i++)
     {
         fread(&value, bytes[i], 1, file);
-        if (i == 8)
-        { // index of compression
-            printf("%s%s \n", headers[i], compression[value]);
+        if (i == 8) // index of compression
+        {
+            printf("%s%s \n", headernames[i], compression[value]);
             continue;
         }
-        printf("%s%d \n", headers[i], value);
+        printf("%s%d \n", headernames[i], value);
     }
     fclose(file);
     return 0;
