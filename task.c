@@ -11,7 +11,20 @@ int main(int argc, char const *argv[])
         printf("Incorrect input \n");
         return INCORRECTINPUT;
     }
-    return printBMP(argv[1]);
+    FILE *file = fopen(argv[1], "rb");
+    if (!file)
+    {
+        printf("No such file \n");
+        return NOSUCHFILE;
+    }
+    if (checkformat(file) == INCORRECTFORMAT)
+    {
+        fclose(file);
+        printf("Incorrect format \n");
+        return INCORRECTFORMAT;
+    }
+    printBMP(file);
+    return 0;
 }
 int checkformat(FILE *file)
 {
@@ -24,23 +37,11 @@ int checkformat(FILE *file)
     }
     return 0;
 }
-int printBMP(const char *src)
+void printBMP(FILE *file)
 {
     int bytes[14] = {4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4, 4, 4}; // number of bytes to read each header
     char *headernames[14] = {"File size: ", "Reserved: ", "Data offset: ", "Size: ", "Width: ", "Height: ", "Planes: ", "Bits/pixel: ", "Compression: ", "Image size: ", "Pixels/meter (horizontal): ", "Pixels/meter (vertical): ", "Colors used: ", "Important colors: "};
     char *compression[3] = {"none", "BI_RLE8", "BI_RLE4"}; // compression types
-    FILE *file = fopen(src, "rb");
-    if (!file)
-    {
-        printf("No such file \n");
-        return NOSUCHFILE;
-    }
-    if (checkformat(file) == INCORRECTFORMAT)
-    {
-        printf("Incorrect file format \n");
-        fclose(file);
-        return INCORRECTFORMAT;
-    }
     int value;
     for (int i = 0; i < 14; i++)
     {
@@ -53,5 +54,4 @@ int printBMP(const char *src)
         printf("%s%d \n", headernames[i], value);
     }
     fclose(file);
-    return 0;
 }
